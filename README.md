@@ -2,10 +2,12 @@
 
 **Turn real-life goals into quests. Build your city. Work alongside an AI planning companion.**
 
-> **Project status: Discovery & design — code and live demo are not available yet.**  
-> This is a portfolio-oriented, AI-assisted indie productivity game concept, not a launched SaaS product. Screens below are **design mockups**, not screenshots of working software.
+> **Project status: M1 local visual prototype — ready for review, not a released MVP.**
+> React UI is implemented: an interactive SVG city, campaign review form and local quest editing. Data resets on reload; backend, rewards, construction and AI are not connected. No public deployment yet.
 
-![GuildLife city concept](assets/concepts/cover-preview.webp)
+![GuildLife running local prototype](output/playwright/m1-city-desktop.png)
+
+Actual running UI. [Full page](output/playwright/m1-city-desktop-full.png) · [Mobile](output/playwright/m1-city-mobile.png) · [Verification record](docs/19_M1_EVIDENCE.md). Original concepts remain in `assets/concepts/`.
 
 ## Why GuildLife?
 
@@ -25,11 +27,11 @@ Typical task managers show a list of to-dos. GuildLife visualizes progress as a 
 
 | Feature | MVP commitment | Implementation |
 |---|---|---|
-| Isometric city + building unlock | Yes | Not started |
-| Campaigns, quests, completion, rewards | Yes | Not started |
+| Isometric city + building unlock | Yes | Four clickable SVG buildings + plot; purchases not implemented |
+| Campaigns, quests, completion, rewards | Yes | Local create/review/edit/done UI; server persistence and rewards not implemented |
 | One AI planner with user approval | Yes | Not started |
 | Persistent state in PostgreSQL | Yes | Not started |
-| Guest demo experience | Yes | Not started |
+| Guest demo experience | Yes | Clearly labeled local fixtures; isolated server sessions not implemented |
 | Focus timer / Kanban / complex NPC workflows | Stretch | Not started |
 | Multi-agent integrations, payments, PvP | No | Out of scope |
 
@@ -39,7 +41,7 @@ Typical task managers show a list of to-dos. GuildLife visualizes progress as a 
 - **Backend:** Python + FastAPI + Pydantic; domain logic and REST endpoints.
 - **Database:** PostgreSQL + SQLAlchemy + Alembic; transactional XP/coins/buildings.
 - **AI:** One server-side LLM integration; structured output, deterministic validation, cost controls.
-- **Engineering:** Docker Compose (dev), pytest, frontend test runner, GitHub Actions (added with the first code milestone).
+- **Engineering:** Vitest + Testing Library, ESLint, TypeScript and frontend GitHub Actions configuration. Docker Compose and pytest planned with the backend. Remote CI has not run yet.
 
 > No Supabase, LangGraph, 3D engine or subscriptions in MVP. Decisions are documented in [ADRs](docs/08_DECISIONS_ADR.md).
 
@@ -86,10 +88,31 @@ The [eight concept screens](assets/concepts/) are **explorations of the wider vi
 
 ## How to run?
 
-Application code has **not** been written yet. Run and deployment instructions will be added when the first vertical slice passes its acceptance tests. No fictional `npm install` or live URL is presented as working.
+Requirements: Node.js **22.12+** (verified on 24.18) and npm. From this repository root:
+
+```sh
+cd frontend
+npm ci --ignore-scripts
+npm run dev
+```
+
+Open the local address printed by Vite (normally `http://127.0.0.1:5173`).
+
+```sh
+npm test
+npm run lint
+npm run build
+npm run preview
+```
+
+Try each city building → create a campaign → review and explicitly add it → open Quests → create, edit and mark a quest done. The wallet stays at **40 coins / 0 XP**. Reload resets the demo. No API key, database or external service is needed.
+
+Validation: 6 component tests; production build and lint pass; browser checks cover desktop/mobile, forms, hotspots and keyboard behavior. See [evidence and limitations](docs/19_M1_EVIDENCE.md). The GitHub Actions workflow is added but has not been run remotely.
+
+Next: **GL-010**, FastAPI + PostgreSQL + Alembic, followed by guest isolation and a server-authoritative economy. Full MVP acceptance tests are still pending.
 
 ## Transparency
 
-This project uses generative AI for ideation, design exploration and (later) coding support. All code, requirements and architectural decisions must be reviewed and tested; the author should describe what was actually built and validated. Research findings and metrics will be added only after they exist. Brand name and external art licensing must be checked before public/commercial release.
+This project uses generative AI for ideation, design exploration and coding support. All code, requirements and architectural decisions must be reviewed and tested; the author should describe what was actually built and validated. Research findings and metrics will be added only after they exist. Brand name and external art licensing must be checked before public/commercial release.
 
 **Working language:** product and engineering docs in Russian; README in English for portfolio accessibility.

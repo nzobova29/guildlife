@@ -4,7 +4,7 @@ An ADR records **context → decision → alternatives → consequences → revi
 
 ## ADR-001: Browser SPA over native/game engine
 
-- **Status:** Proposed, 05.11.2026.
+- **Status:** Validated locally in M1, 05.11.2026; awaiting author review.
 - **Context:** Need a visually strong, shareable recruiter demo with short development cycle.
 - **Decision:** React + TypeScript + Vite; isometric 2D scene via layered images/CSS/HTML hit-areas.
 - **Alternatives:** Phaser, Unity, pure canvas, native mobile.
@@ -68,3 +68,7 @@ An ADR records **context → decision → alternatives → consequences → revi
 | 2026-11-05 | 007 | Accepted | Author | Transparency rule |
 
 Before implementation, add concrete results of tech spikes and update proposal statuses.
+
+## M1 implementation evidence — 05.11.2026
+
+ADR-001 проверен локальным React/Vite build: SVG-здания и HTML-hotspots, формы, адаптивная навигация, browser screenshots. [Evidence](19_M1_EVIDENCE.md). SVG-геометрия выбрана как обратимое решение для первого спринта; исходные PNG-концепты не включены в приложение. ADR-002–006 остаются Proposed до backend-этапа.

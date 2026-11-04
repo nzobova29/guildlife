@@ -1,6 +1,6 @@
 # Contributing and review rules
 
-This repository begins as a product/design package and may later become a full-stack app.
+This repository contains an M1 frontend prototype and the product/design package. Backend implementation is next. Run `npm test`, `npm run lint` and `npm run build` from `frontend/` before submitting frontend changes.
 
 Before proposing a feature, read [PRD](docs/02_PRD.md), [Roadmap](docs/09_ROADMAP.md), and [Working agreement](docs/16_WORKFLOW.md). Every feature should have a focused issue with acceptance criteria; small PRs should link to that issue and show real test evidence. No promises of live demos, metrics, or AI autonomy before implementation.
 

@@ -10,4 +10,7 @@ All notable implemented changes will be documented here. Do not confuse design d
 - Added eight **static UI concept images**.
 
 ### Code / deployed product
-- **None yet.** Implementation has not started.
+- Implemented local M1 React/TypeScript/Vite prototype: four interactive SVG buildings and a free plot, six navigable sections, campaign validation/review, local quest create/edit/done and empty states.
+- Added Vitest/Testing Library tests, ESLint, type checking, reproducible npm lockfile and frontend CI configuration (remote run pending).
+- Added browser verification screenshots and evidence record.
+- No backend, persistence, real rewards, construction, AI integration or public deployment yet.

@@ -1,0 +1,193 @@
+.dialog {
+  padding: 0;
+  border: 1px solid #bba0e54d;
+  border-radius: 19px;
+  background: #252338;
+  color: var(--text);
+  width: min(570px, calc(100% - 32px));
+  max-height: calc(100dvh - 40px);
+  overflow: auto;
+  box-shadow: 0 30px 100px #0008;
+}
+.dialog::backdrop {
+  background: #10101ed9;
+  backdrop-filter: blur(6px);
+}
+.dialog-inner {
+  padding: 28px 32px 32px;
+}
+.dialog-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.dialog-top .eyebrow {
+  margin: 0;
+  font-size: 9px;
+}
+.dialog h2 {
+  font-size: 27px;
+  line-height: 1.3;
+  margin-bottom: 12px;
+}
+.step-track {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 25px 0;
+  color: var(--text-muted);
+  font-size: 11px;
+}
+.step-track .active {
+  color: #d4bbff;
+}
+.step-track i {
+  height: 1px;
+  width: 35px;
+  background: #665275;
+}
+label {
+  display: block;
+  font-size: 12px;
+  font-weight: 550;
+  margin: 20px 0 9px;
+  color: #d1c8e0;
+}
+input,
+textarea,
+select {
+  display: block;
+  width: 100%;
+  border: 1px solid #9580b447;
+  border-radius: 9px;
+  background: #1c1b2e;
+  color: var(--text);
+  font-size: 13px;
+  padding: 13px 14px;
+  min-height: 45px;
+  line-height: 1.5;
+  color-scheme: dark;
+}
+input::placeholder,
+textarea::placeholder {
+  color: #aaa0bc;
+  font-size: 12px;
+}
+textarea {
+  resize: vertical;
+}
+input[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+.form-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.form-columns > div {
+  min-width: 0;
+}
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 25px;
+}
+.form-note {
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--text-muted);
+  margin: 18px 0;
+}
+.form-error {
+  font-size: 12px;
+  color: var(--danger);
+  padding: 12px;
+  background: #d96c6c10;
+  border: 1px solid #d96c6c33;
+  border-radius: 8px;
+  margin: 16px 0;
+}
+.review-card {
+  border: 1px solid #b39bd633;
+  padding: 21px;
+  background: #a78cd40a;
+  border-radius: 12px;
+}
+.review-card h3 {
+  font-size: 21px;
+  overflow-wrap: anywhere;
+}
+.review-card p {
+  color: var(--text-muted);
+  font-size: 13px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.review-card dl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  font-size: 12px;
+  margin: 22px 0 0;
+}
+.review-card dt {
+  color: var(--text-muted);
+}
+.review-card dd {
+  text-align: right;
+  margin: 0;
+}
+.reward-example {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 9px;
+  background: #a78cd40c;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.reward-example strong {
+  color: var(--accent-soft);
+  white-space: nowrap;
+}
+@media (max-width: 700px) {
+  .dialog-inner {
+    padding: 20px;
+  }
+  .dialog h2 {
+    font-size: 24px;
+  }
+  .dialog .muted {
+    font-size: 12px;
+  }
+  .dialog-top {
+    margin-bottom: 16px;
+  }
+  .form-columns {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .form-actions {
+    flex-wrap: wrap;
+  }
+  .form-actions .button {
+    flex: 1;
+    min-width: 100px;
+  }
+  .reward-example {
+    flex-direction: column;
+    gap: 8px;
+  }
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+  .dialog .feature-icon.large {
+    margin-bottom: 16px;
+  }
+}

@@ -10,8 +10,8 @@ QA-08,Privacy,Guest A accesses guest B resource,Denied without leaking data,API 
 QA-09,Buildings,Buy without enough coins,No building/no negative balance,API,P0,Not run,
 QA-10,Buildings,Double-submit build,Only one building and charge,DB integration,P0,Not run,
 QA-11,Persistence,Reload after build and task complete,State preserved,E2E,P0,Not run,
-QA-12,UX,Fresh empty account and no tasks,Helpful empty state/CTA,UI,P0,Not run,
-QA-13,Responsive,At 390px viewport,Primary journey usable/no horizontal overflow,Manual,P0,Not run,
-QA-14,Accessibility,Keyboard through core flow,Visible focus and buttons actionable,Manual,P0,Not run,
+QA-12,UX,Fresh empty account and no tasks,Helpful empty state/CTA,UI,P0,Partial (local quest empty state),frontend/src/App.test.tsx
+QA-13,Responsive,At 390px viewport,Primary journey usable/no horizontal overflow,Manual,P0,Pass (M1 only),docs/19_M1_EVIDENCE.md; output/playwright/m1-city-mobile.png
+QA-14,Accessibility,Keyboard through core flow,Visible focus and buttons actionable,Manual,P0,Partial (M1 forms; full server loop pending),output/playwright/m1-smoke-result.txt
 QA-15,Security,Inspect built frontend bundle,No LLM provider key or sensitive env,Build review,P0,Not run,
-QA-16,Portfolio,Compare README vs actual app,No unimplemented features marked done,Manual,P0,Not run,
+QA-16,Portfolio,Compare README vs actual app,No unimplemented features marked done,Manual,P0,Pass (local M1 status),README.md; docs/19_M1_EVIDENCE.md

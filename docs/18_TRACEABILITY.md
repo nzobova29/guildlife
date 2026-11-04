@@ -1,6 +1,6 @@
 # 18. Requirements traceability matrix — PRD → backlog → QA
 
-**Purpose:** prove that important product promises turn into buildable tickets and testable acceptance cases. This is a planning baseline, **not evidence that implementation/tests already exist**.
+**Purpose:** prove that important product promises turn into buildable tickets and testable acceptance cases. This is the full-MVP planning baseline. M1 frontend evidence now exists in [19_M1_EVIDENCE](19_M1_EVIDENCE.md); API, DB and AI acceptance cases remain pending.
 
 | PRD requirement | Priority | Backlog owner issues | Acceptance / test evidence |
 |---|---|---|---|
@@ -26,3 +26,7 @@ When promoting a P1 feature to MVP, add a backlog issue and a QA case **before**
 - Pixel-level building consistency and mobile layouts need a visual acceptance checklist after first browser prototype.
 - AI outputs need golden test fixtures, provider configuration and recorded eval results before M3.
 - Deployment platform choice and actual operational limits require a spike before M4.
+
+## M1 evidence only
+
+GL-005–009 реализованы локально и находятся в Review. `frontend/src/App.test.tsx` проверяет навигацию, локальную валидацию/подтверждение/отмену, квесты без наград и доступность ручного режима. Эти тесты **не закрывают** FR-01/FR-03/FR-04 в полном объёме: серверное сохранение и изоляция ещё отсутствуют. QA-13 проверен на 390px, QA-14 частично проверен для форм M1.

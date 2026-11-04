@@ -14,7 +14,7 @@ flowchart LR
     GH -.unit/integration.-> API
 ```
 
-## Planned repository layout (folders are a design, not written code)
+## Repository layout (frontend implemented; backend/Compose planned)
 
 ```text
 GuildLife/
@@ -22,8 +22,8 @@ GuildLife/
 ├── docs/                      # продуктовые/технические решения
 ├── planning/                  # backlog, risks, test cases
 ├── assets/concepts/            # design mockups, NOT implemented UI
-├── frontend/                   # [TO BE CREATED] Vite + React + TS
-│   └── src/{pages,components,features,api,assets}/
+├── frontend/                   # [IMPLEMENTED M1] Vite + React + TS
+│   └── src/{components,features,data,styles,test}/
 ├── backend/                    # [TO BE CREATED] FastAPI
 │   ├── app/{api,domain,models,schemas,services,db}/
 │   ├── alembic/

@@ -3,11 +3,11 @@ GL-001,E0,Approve P0 scope and success path,P0,S,M0,,Locked MVP and exclusions,P
 GL-002,E0,Document 5-step first-quest journey,P0,S,M0,GL-001,Clear user path,"Screens, interactions and edge cases defined",Backlog
 GL-003,E0,Freeze visual style and asset plan,P0,S,M0,GL-001,Reusable art rules,"Perspective, palette, building cutouts and license notes",Backlog
 GL-004,E0,Set up GitHub Project and DoD,P0,S,M0,GL-001,Traceable delivery,"Project columns, labels and PR review checklist created",Backlog
-GL-005,E1,Bootstrap Vite React TypeScript frontend,P0,S,M1,GL-003,Working UI shell,Local dev server/build works; app routes load,Backlog
-GL-006,E1,Implement AppShell side navigation and HUD,P0,M,M1,GL-005,Consistent game layout,"Desktop shell and mobile fallback, no broken navigation",Backlog
-GL-007,E1,Render isometric city with 4 hotspots,P0,M,M1,"GL-006,GL-003",Interactive city,Each building hotspot opens the correct panel,Backlog
-GL-008,E1,Build campaign form and review UI,P0,M,M1,GL-006,User can enter goal,Form validates fields and shows loading/error/success,Backlog
-GL-009,E1,Build quest list with completion UI,P0,M,M1,GL-006,Visible task loop,Create/edit/done states; temporary fixture clearly labeled,Backlog
+GL-005,E1,Bootstrap Vite React TypeScript frontend,P0,S,M1,GL-003,Working UI shell,Local dev server/build works; app routes load,Review
+GL-006,E1,Implement AppShell side navigation and HUD,P0,M,M1,GL-005,Consistent game layout,"Desktop shell and mobile fallback, no broken navigation",Review
+GL-007,E1,Render isometric city with 4 hotspots,P0,M,M1,"GL-006,GL-003",Interactive city,Each building hotspot opens the correct panel,Review
+GL-008,E1,Build campaign form and review UI,P0,M,M1,GL-006,User can enter goal,"M1: fields validate, explicit local review/accept/cancel; M2: real network loading/error/success",Review
+GL-009,E1,Build quest list with completion UI,P0,M,M1,GL-006,Visible task loop,Create/edit/done states; temporary fixture clearly labeled,Review
 GL-010,E2,Bootstrap FastAPI and database migrations,P0,M,M2,GL-004,Functional backend foundation,Health endpoint and PostgreSQL migration work locally,Backlog
 GL-011,E2,Implement isolated guest sessions,P0,M,M2,GL-010,Privacy-safe demo,Separate guests cannot see or edit each other data,Backlog
 GL-012,E2,Persist campaigns and quests CRUD,P0,M,M2,"GL-010,GL-011",Real tasks persisted,Create/update/list tasks and campaign; reload persists,Backlog
@@ -21,7 +21,7 @@ GL-019,E3,Purchase building atomically,P0,M,M2,"GL-014,GL-018",Server-authoritat
 GL-020,E3,Render build selector and animated reveal,P0,M,M2,"GL-007,GL-019",Visual game payoff,Affordable building appears on map after server success,Backlog
 GL-021,E3,Persist city after reload,P0,S,M2,"GL-019,GL-020",Persistent world,Built object stays after reload and displays actual level,Backlog
 GL-022,E4,Implement safe LLM plan adapter,P0,M,M3,GL-010,Real AI plan,"Server-only key, input limits, strict schema validation",Backlog
-GL-023,E4,Implement AI job status and result storage,P0,M,M3,"GL-022,GL-011",Honest agent status,"Real queued/running/ready/failed state, restart/failure considered",Backlog
+GL-023,E4,Implement AI job status and result storage,P0,M,M3,"GL-022,GL-011",Honest agent status,"Real queued/running/awaiting_approval/done/failed state, restart/failure considered",Backlog
 GL-024,E4,Implement plan review and accept,P0,M,M3,"GL-008,GL-023,GL-012",Human approves AI output,"Edit/reject/accept; no changes before accept, no duplicates",Backlog
 GL-025,E4,AI budget rate limits and manual fallback,P0,M,M3,"GL-022,GL-024",Safe usable AI,Budget exhausted/timeouts handled; manual route works,Backlog
 GL-026,E4,Run prompt schema and safety eval cases,P0,M,M3,GL-022,Evidence of AI reliability,Test corpus recorded; invalid JSON and malicious inputs handled,Backlog

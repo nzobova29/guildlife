@@ -1,0 +1,69 @@
+async (page) => {
+  const errors = [];
+  const onError = error => errors.push(error.message);
+  page.on('pageerror', onError);
+  const results = [];
+  const assert = (value, label) => { if (!value) throw new Error(label); results.push(label); };
+  await page.goto('http://127.0.0.1:5173/');
+  await page.setViewportSize({ width: 1440, height: 900 });
+  for (const [name, heading] of [['Академия','Твои кампании'],['Лаборатория','Архитектор'],['Гильдия','Гильдия квестов'],['Ратуша','Твой прогресс'],['Свободный участок','Место для нового']]) {
+    await page.getByRole('button', { name: `Открыть: ${name}`, exact: true }).click();
+    await page.getByRole('heading', { name: heading, exact: true }).waitFor();
+    results.push(`hotspot: ${name}`);
+    await page.getByRole('link', { name: 'Город', exact: true }).click();
+  }
+  await page.getByRole('button', { name: 'Новая кампания', exact: true }).click();
+  await page.getByLabel('Название кампании', { exact: true }).fill('   ');
+  await page.getByRole('button', { name: 'Проверить кампанию' }).click();
+  assert(await page.getByRole('alert').isVisible(), 'whitespace rejected');
+  await page.getByLabel('Название кампании', { exact: true }).fill('Браузерная проверка');
+  await page.getByLabel('Название кампании', { exact: true }).focus();
+  for (let i = 0; i < 12; i++) {
+    await page.keyboard.press('Tab');
+    if (!await page.evaluate(() => document.activeElement === document.body || !!document.activeElement?.closest('dialog'))) throw new Error('Focus escaped dialog');
+  }
+  results.push('native modal blocks background controls (browser chrome may receive focus)');
+  await page.getByLabel('Название кампании', { exact: true }).focus();
+  await page.keyboard.press('Escape');
+  assert(await page.getByRole('dialog').count() === 0, 'Escape closes modal');
+  assert(await page.getByRole('button', { name: 'Новая кампания', exact: true }).evaluate(el => el === document.activeElement), 'Escape restores focus');
+  await page.getByRole('button', { name: 'Новая кампания', exact: true }).press('Enter');
+  await page.getByLabel('Название кампании', { exact: true }).fill('Браузерная проверка');
+  await page.getByRole('button', { name: 'Проверить кампанию' }).click();
+  assert(await page.getByRole('heading', { name: 'Проверь свою цель' }).evaluate(el => el === document.activeElement), 'focus moves to review heading');
+  await page.screenshot({ path: 'output/playwright/m1-campaign-review.png', fullPage: true });
+  await page.getByRole('button', { name: 'Добавить в демо' }).click();
+  await page.getByRole('heading', { name: 'Браузерная проверка', exact: true }).waitFor();
+  results.push('explicit campaign acceptance');
+  await page.getByRole('link', { name: 'Квесты', exact: true }).click();
+  await page.getByRole('button', { name: 'Новый квест', exact: true }).click();
+  await page.getByLabel('Название квеста', { exact: true }).fill('Проверить интерфейс');
+  await page.getByRole('button', { name: 'Добавить квест' }).click();
+  await page.getByRole('button', { name: 'Завершить: Проверить интерфейс', exact: true }).click();
+  await page.getByRole('button', { name: 'Готово', exact: true }).click();
+  assert(await page.getByRole('button', { name: 'Завершено: Проверить интерфейс', exact: true }).isDisabled(), 'completed quest cannot complete twice');
+  assert((await page.getByLabel('Демонстрационный баланс').innerText()).includes('40'), 'wallet unchanged');
+  await page.screenshot({ path: 'output/playwright/m1-quests-desktop.png', fullPage: true });
+  await page.reload();
+  assert(await page.getByRole('heading', { name: 'Проверить интерфейс', exact: true }).count() === 0, 'reload resets local data as disclosed');
+  for (const width of [1280, 390]) {
+    await page.setViewportSize({ width, height: width === 390 ? 844 : 720 });
+    for (const name of ['Город','Квесты','Кампании','Архитектор','Строительство','Прогресс']) {
+      await page.getByRole('link', { name, exact: true }).click();
+      assert(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), `${width}px no overflow: ${name}`);
+    }
+  }
+  await page.getByRole('link', { name: 'Город', exact: true }).click();
+  await page.screenshot({ path: 'output/playwright/m1-city-mobile.png', fullPage: true });
+  await page.getByRole('button', { name: 'Новая кампания', exact: true }).click();
+  assert(await page.evaluate(() => { const r = document.querySelector('dialog').getBoundingClientRect(); return r.left >= 0 && r.right <= innerWidth; }), '390px form fits viewport');
+  await page.screenshot({ path: 'output/playwright/m1-form-mobile.png', fullPage: true });
+  await page.keyboard.press('Escape');
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.evaluate(() => window.scrollTo(0,0));
+  await page.screenshot({ path: 'output/playwright/m1-city-desktop-full.png', fullPage: true });
+  await page.screenshot({ path: 'output/playwright/m1-city-desktop.png' });
+  assert(errors.length === 0, `runtime errors: ${JSON.stringify(errors)}`);
+  page.off('pageerror', onError);
+  return { checks: results.length, results };
+}

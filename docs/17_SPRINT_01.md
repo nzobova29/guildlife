@@ -4,10 +4,10 @@
 
 ## Sprint 0 / pre-coding — 1 session
 
-- [ ] Review PRD / product brief and approve P0 list (GL-001, GL-002).
+- [ ] Review PRD / product brief and approve P0 list (GL-001).
 - [ ] Choose **one** default camera frame and export separate city/building assets (GL-003).
-- [ ] Freeze one top-priority 5-step journey (GL-004).
-- [ ] Create GitHub repo; add these docs, set up Project Board and labels.
+- [ ] Freeze one top-priority 5-step journey (GL-002).
+- [ ] Create GitHub repo; add these docs, set up Project Board and labels (GL-004).
 
 **Exit:** M0 (scope agreed). Only then begin implementation.
 
@@ -40,3 +40,7 @@ Next single priority:
 ## End-of-sprint demo
 
 Open the app, click at least 3 buildings, open Quest panel, navigate a form and back. Explain which controls are real versus placeholders. If it does not work reliably, don't start the next sprint just to check the box.
+
+## Фактическое выполнение — 05.11.2026
+
+Сессии A–C реализованы локально в ветке `feat/GL-005-visual-shell`; GL-005–009 переведены в Review. [Доказательства](19_M1_EVIDENCE.md): 6 тестов, lint/build, браузерные проверки и скриншоты. Панели зданий открываются отдельными разделами; формы — нативными диалогами. Серверные loading/error состояния перенесены в M2, поскольку M1 не делает сетевых операций. Внешняя доска, интервью и формальная приёмка автором не отмечены завершёнными.
