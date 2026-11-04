@@ -1,0 +1,46 @@
+name: Feature / Story
+description: Define a small testable product or engineering feature.
+title: "[GL-XXX] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: User/system outcome
+      description: Who needs what and why?
+      placeholder: "As a player, I want ... so that ..."
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope and explicit non-goals
+      placeholder: "In scope / Not in scope"
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Describe testable Given/When/Then conditions including failure cases.
+    validations:
+      required: true
+  - type: input
+    id: dependency
+    attributes:
+      label: Dependencies / related ADR
+      placeholder: "GL-013, ADR-005"
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options: ["P0 - MVP blocker", "P1 - should", "P2 - future"]
+    validations:
+      required: true
+  - type: checkboxes
+    id: ready
+    attributes:
+      label: Ready checklist
+      options:
+        - label: Acceptance criteria are testable
+        - label: Small enough for 1-2 focused sessions (or split)

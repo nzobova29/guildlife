@@ -1,0 +1,9 @@
+﻿id,risk,likelihood_1_5,impact_1_5,score,mitigation,trigger,owner,status
+R-01,Generated art inconsistent across buildings,4,4,16,"Freeze style/perspective, export coherent kit",Wrong camera angle or color on second asset,author,Open
+R-02,MVP scope expands toward all 8 mocks,5,4,20,Milestone gates and P0-only plan,P1 feature requested before M2,author,Open
+R-03,React/TypeScript learning slows development,4,3,12,"Small components, typed API, review generated code",Repeated unexplainable build errors,author,Open
+R-04,AI provider errors or cost overruns,3,4,12,"Validation, rate limit, budget cap and fallback",AI job failures/cost trend,author,Open
+R-05,Guest privacy leak or abusive public usage,3,5,15,Per-guest authorization; limit and session expiry,Cross-session access test fails,author,Open
+R-06,Quest completion or build grants twice,3,4,12,DB ledger/uniques/transactions,Concurrent POST duplicates currency,author,Open
+R-07,Unexpected deployment problems,3,4,12,"Deploy spike early at M2, config docs",Can only run locally after M2,author,Open
+R-08,"Great pictures, no functioning product",4,5,20,Working vertical slice gate M2,Two sessions spent on effects before task loop,author,Open

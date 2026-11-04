@@ -1,0 +1,37 @@
+﻿id,epic,title,priority,estimate,milestone,depends_on,outcome,acceptance_criteria,status
+GL-001,E0,Approve P0 scope and success path,P0,S,M0,,Locked MVP and exclusions,PRD P0 and non-goals approved; no contradictory specs,Backlog
+GL-002,E0,Document 5-step first-quest journey,P0,S,M0,GL-001,Clear user path,"Screens, interactions and edge cases defined",Backlog
+GL-003,E0,Freeze visual style and asset plan,P0,S,M0,GL-001,Reusable art rules,"Perspective, palette, building cutouts and license notes",Backlog
+GL-004,E0,Set up GitHub Project and DoD,P0,S,M0,GL-001,Traceable delivery,"Project columns, labels and PR review checklist created",Backlog
+GL-005,E1,Bootstrap Vite React TypeScript frontend,P0,S,M1,GL-003,Working UI shell,Local dev server/build works; app routes load,Backlog
+GL-006,E1,Implement AppShell side navigation and HUD,P0,M,M1,GL-005,Consistent game layout,"Desktop shell and mobile fallback, no broken navigation",Backlog
+GL-007,E1,Render isometric city with 4 hotspots,P0,M,M1,"GL-006,GL-003",Interactive city,Each building hotspot opens the correct panel,Backlog
+GL-008,E1,Build campaign form and review UI,P0,M,M1,GL-006,User can enter goal,Form validates fields and shows loading/error/success,Backlog
+GL-009,E1,Build quest list with completion UI,P0,M,M1,GL-006,Visible task loop,Create/edit/done states; temporary fixture clearly labeled,Backlog
+GL-010,E2,Bootstrap FastAPI and database migrations,P0,M,M2,GL-004,Functional backend foundation,Health endpoint and PostgreSQL migration work locally,Backlog
+GL-011,E2,Implement isolated guest sessions,P0,M,M2,GL-010,Privacy-safe demo,Separate guests cannot see or edit each other data,Backlog
+GL-012,E2,Persist campaigns and quests CRUD,P0,M,M2,"GL-010,GL-011",Real tasks persisted,Create/update/list tasks and campaign; reload persists,Backlog
+GL-013,E2,Complete quest exactly once server-side,P0,M,M2,"GL-012,GL-014",Trustworthy rewards,Double/concurrent request results in one reward ledger entry,Backlog
+GL-014,E2,Create wallet ledger and level calculations,P0,M,M2,"GL-010,GL-011",Traceable XP and coins,Wallet balance equals ledger and level formula is deterministic,Backlog
+GL-015,E2,Integrate frontend quest APIs,P0,M,M2,"GL-009,GL-012",Connected quest UI,No hardcoded tasks after integration; errors recoverable,Backlog
+GL-016,E2,Add seed demo data per session,P0,S,M2,"GL-011,GL-012",Useful first visit,Each guest gets starter content without accessing shared write state,Backlog
+GL-017,E2,Add backend validation and error contract,P0,S,M2,GL-012,Predictable API,400/404/409/422 cases mapped and covered,Backlog
+GL-018,E3,Define buildable plots and building types,P0,S,M2,GL-010,Deterministic city state,"Types, prices, default buildings and plot ids seeded",Backlog
+GL-019,E3,Purchase building atomically,P0,M,M2,"GL-014,GL-018",Server-authoritative build,No negatives or double purchase under repeat/concurrent requests,Backlog
+GL-020,E3,Render build selector and animated reveal,P0,M,M2,"GL-007,GL-019",Visual game payoff,Affordable building appears on map after server success,Backlog
+GL-021,E3,Persist city after reload,P0,S,M2,"GL-019,GL-020",Persistent world,Built object stays after reload and displays actual level,Backlog
+GL-022,E4,Implement safe LLM plan adapter,P0,M,M3,GL-010,Real AI plan,"Server-only key, input limits, strict schema validation",Backlog
+GL-023,E4,Implement AI job status and result storage,P0,M,M3,"GL-022,GL-011",Honest agent status,"Real queued/running/ready/failed state, restart/failure considered",Backlog
+GL-024,E4,Implement plan review and accept,P0,M,M3,"GL-008,GL-023,GL-012",Human approves AI output,"Edit/reject/accept; no changes before accept, no duplicates",Backlog
+GL-025,E4,AI budget rate limits and manual fallback,P0,M,M3,"GL-022,GL-024",Safe usable AI,Budget exhausted/timeouts handled; manual route works,Backlog
+GL-026,E4,Run prompt schema and safety eval cases,P0,M,M3,GL-022,Evidence of AI reliability,Test corpus recorded; invalid JSON and malicious inputs handled,Backlog
+GL-027,E5,Backend unit and DB integration tests,P0,M,M4,"GL-019,GL-013",Verified backend logic,"Reward, guest isolation, concurrency and purchase tests pass",Backlog
+GL-028,E5,End-to-end critical path tests,P0,M,M4,"GL-024,GL-021",Whole journey verified,Guest->campaign->quest->build->reload works,Backlog
+GL-029,E5,Set up lint types and GitHub Actions,P0,M,M4,"GL-005,GL-010",Build checks,Frontend checks and backend tests run in CI,Backlog
+GL-030,E5,Deploy web app API and database,P0,L,M4,GL-028,Accessible public demo,"Stable URL/health check, no exposed keys, migrations successful",Backlog
+GL-031,E5,Accessibility responsive and performance pass,P0,M,M4,GL-028,Quality UX,"Keyboard critical path, 390px fallback, no P0/P1 visual issues",Backlog
+GL-032,E5,Portfolio README release demo and case study,P0,M,M4,"GL-030,GL-028",Credible GitHub case,"Real screenshots, URL, limitations, architecture, 2-min demo",Backlog
+GL-033,E6,Focus timer tied to quest,P1,M,Post-MVP,GL-015,Deeper focus loop,Timer persists display; no auto-credit for time alone,Backlog
+GL-034,E6,Kanban project board,P1,L,Post-MVP,GL-012,Project tracking,Move task among stages; linked to campaign,Backlog
+GL-035,E6,Multi-agent visualization integrations,P2,L,Future,GL-023,Advanced agent console,Real provider/tool events; no fake percentages,Backlog
+GL-036,E6,Weekly progress recap (real events only),P1,M,Post-MVP,"GL-013,GL-021",Reflect real progress,Report aggregates completed tasks and XP over 7 days; zero state honest,Backlog

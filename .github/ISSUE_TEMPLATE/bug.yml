@@ -1,0 +1,33 @@
+name: Bug report
+description: Report a reproducible defect with evidence.
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction steps
+      description: Numbered actions, URL/context, demo account state (without private data).
+      placeholder: "1. Open ...\n2. Click ...\n3. Observe ..."
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior and evidence
+      description: Screenshot, sanitized logs, browser, API status.
+    validations:
+      required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options: ["P0 - critical", "P1 - high", "P2 - medium", "P3 - polish"]
+    validations:
+      required: true
