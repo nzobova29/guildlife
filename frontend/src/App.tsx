@@ -1,54 +1,57 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  ArrowRight,
-  ArrowUpRight,
-  BookOpen,
-  CheckCheck,
   ChevronRight,
   Coins,
-  Compass,
-  FlaskConical,
-  Hammer,
   Info,
-  Landmark,
   Layers3,
-  Leaf,
   Map,
-  Plus,
-  Shield,
   Sparkles,
-  Sprout,
-  Trophy,
-  type LucideIcon,
+  CheckCheck,
+  BookOpen,
+  Landmark,
+  Leaf,
+  ArrowRight,
 } from "lucide-react";
-import { CityMap } from "./components/CityMap";
-import { BuildingArt } from "./components/BuildingArt";
+import { Sidebar } from "./components/Sidebar";
+import { Home } from "./components/Home";
 import { CampaignForm, Campaigns } from "./features/Campaigns";
 import { Quests } from "./features/Quests";
-import { initialCampaigns, initialQuests, type Page } from "./data/demo";
+import { BuildPanel } from "./features/BuildPanel";
+import { Architect } from "./features/Architect";
+import { useGame } from "./api/useGame";
+import { gameApi } from "./api/game";
+import type { Page } from "./data/demo";
 
-const navigation: { id: Page; title: string; icon: LucideIcon }[] = [
-  { id: "city", title: "Город", icon: Map },
-  { id: "quests", title: "Квесты", icon: CheckCheck },
-  { id: "campaigns", title: "Кампании", icon: BookOpen },
-  { id: "architect", title: "Архитектор", icon: FlaskConical },
-  { id: "build", title: "Строительство", icon: Hammer },
-  { id: "progress", title: "Прогресс", icon: Trophy },
-];
+const titles: Record<Page, string> = {
+  city: "Город",
+  quests: "Квесты",
+  campaigns: "Кампании",
+  architect: "Архитектор",
+  build: "Строительство",
+  progress: "Прогресс",
+};
+const headings: Partial<Record<Page, string>> = {
+  quests: "Реальные дела. Видимый прогресс.",
+  campaigns: "У каждой цели есть начало.",
+  architect: "Большая цель — понятный маршрут.",
+  build: "Место для будущих достижений.",
+  progress: "Каждый шаг имеет значение.",
+};
 function currentPage(): Page {
-  return (
-    navigation.find((item) => item.id === window.location.hash.slice(1))?.id ||
-    "city"
-  );
+  const hash = window.location.hash.slice(1);
+  return Object.hasOwn(titles, hash) ? (hash as Page) : "city";
 }
 
-export default function App() {
+export default function App({ mode }: { mode?: "preview" | "server" } = {}) {
+  const [preview, setPreview] = useState(
+    mode === "preview" ||
+      (!mode &&
+        new URLSearchParams(window.location.search).get("preview") === "1"),
+  );
   const [page, setPage] = useState<Page>(currentPage);
-  const [campaigns, setCampaigns] = useState(initialCampaigns);
-  const [quests, setQuests] = useState(initialQuests);
   const [campaignOpen, setCampaignOpen] = useState(false);
   const mainRef = useRef<HTMLElement>(null);
-  const completed = quests.filter((q) => q.done).length;
+  const game = useGame(preview);
   useEffect(() => {
     const update = () => {
       setPage(currentPage());
@@ -61,7 +64,8 @@ export default function App() {
     window.location.hash = next;
     setPage(next);
   }
-  const title = navigation.find((item) => item.id === page)!.title;
+  const state = game.state;
+  const completed = state?.quests.filter((q) => q.done).length || 0;
   return (
     <div className="app-shell">
       <a
@@ -74,386 +78,205 @@ export default function App() {
       >
         Перейти к содержимому
       </a>
-      <aside className="sidebar">
-        <a className="brand" href="#city" aria-label="GuildLife — главная">
-          <span className="brand-mark">
-            <Landmark size={23} />
-          </span>
-          <span>
-            <strong>GuildLife</strong>
-            <small>PLAY YOUR PROGRESS</small>
-          </span>
-        </a>
-        <div className="nav-label">ТВОЙ МИР</div>
-        <nav aria-label="Основная навигация">
-          {navigation.map(({ id, title: label, icon: Icon }) => (
-            <a
-              key={id}
-              href={`#${id}`}
-              aria-current={page === id ? "page" : undefined}
-              className={page === id ? "nav-item active" : "nav-item"}
-            >
-              <Icon size={19} />
-              <span>{label}</span>
-              {page === id && <span className="nav-dot" />}
-            </a>
-          ))}
-        </nav>
-        <div className="sidebar-bottom">
-          <div className="calm-note">
-            <Leaf size={18} />
-            <p>
-              В своём темпе.
-              <br />
-              <span>Без штрафов за паузы.</span>
-            </p>
-          </div>
-          <div className="player-card">
-            <span className="avatar">
-              <Shield size={23} />
-            </span>
-            <div>
-              <strong>Путешественник</strong>
-              <small>Уровень 1 · Новый житель</small>
-            </div>
-            <div className="player-xp">
-              <span>Начало большой истории</span>
-              <strong>0 / 500 XP</strong>
-            </div>
-            <progress
-              value="0"
-              max="500"
-              aria-label="Демонстрационный уровень"
-            />
-          </div>
-          <span className="version">GUILDLIFE · ПРОТОТИП 0.1</span>
-        </div>
-      </aside>
+      <Sidebar page={page} totalXp={state?.wallet.total_xp || 0} />
       <div className="workspace">
         <header className="topbar">
           <div className="breadcrumb">
             <span>Мой мир</span>
             <ChevronRight size={14} />
-            <strong>{title}</strong>
+            <strong>{titles[page]}</strong>
           </div>
           <div className="resources">
-            <span aria-label="Демонстрационный баланс">
+            <span aria-label={preview ? "Демонстрационный баланс" : "Баланс"}>
               <Coins size={17} />
-              <strong>40</strong>
+              <strong>{state?.wallet.coins ?? "—"}</strong>
               <small>монет</small>
             </span>
-            <span aria-label="Демонстрационный опыт">
+            <span aria-label={preview ? "Демонстрационный опыт" : "Опыт"}>
               <Sparkles size={16} />
-              <strong>0 XP</strong>
+              <strong>{state ? `${state.wallet.total_xp} XP` : "—"}</strong>
             </span>
-            <span className="demo-tag">ДЕМО</span>
+            <span className="demo-tag">{preview ? "МАКЕТ" : "ГОСТЬ"}</span>
           </div>
         </header>
         <main id="main-content" ref={mainRef} tabIndex={-1}>
           <div className="demo-notice">
             <Info size={15} />
             <p>
-              <strong>Интерактивный прототип.</strong> Данные примерные;
-              изменения исчезнут после перезагрузки.
+              {preview ? (
+                <>
+                  <strong>Интерактивный прототип.</strong> Данные примерные;
+                  изменения исчезнут после перезагрузки.
+                </>
+              ) : (
+                <>
+                  <strong>Твой гостевой город.</strong> Прогресс сохраняется в
+                  этом браузерном сеансе на сервере. Сохраняй cookie, чтобы
+                  вернуться.
+                </>
+              )}
             </p>
-            <span>M1</span>
+            <span>{preview ? "M1" : "M2"}</span>
           </div>
-          {page === "city" ? (
-            <>
-              <div className="page-heading">
-                <div>
-                  <span className="eyebrow">МАЛЕНЬКИЕ ШАГИ. БОЛЬШОЙ МИР.</span>
-                  <h1>Твой город начинается с тебя.</h1>
-                  <p>Превращай реальные дела в квесты. Строй то, что важно.</p>
-                </div>
-                <button
-                  className="button primary"
-                  onClick={() => setCampaignOpen(true)}
-                >
-                  <Plus size={18} />
-                  Новая кампания
-                </button>
-              </div>
-              <div className="world-layout">
-                <div className="world-column">
-                  <CityMap onNavigate={navigate} />
-                  <div className="journey-strip">
-                    <div>
-                      <span className="journey-icon">
-                        <Compass size={21} />
-                      </span>
-                      <span>
-                        <strong>От цели — к своему городу</strong>
-                        <small>
-                          Один понятный шаг запускает большую историю.
-                        </small>
-                      </span>
-                    </div>
-                    <ol>
-                      <li>
-                        <span>01</span>Цель
-                      </li>
-                      <li>
-                        <span>02</span>Квест
-                      </li>
-                      <li>
-                        <span>03</span>Город
-                      </li>
-                    </ol>
-                  </div>
-                </div>
-                <aside className="today-panel" aria-label="С чего начать">
-                  <div className="section-title">
-                    <span className="eyebrow">ТВОЙ СЛЕДУЮЩИЙ ШАГ</span>
-                    <Sprout size={18} />
-                  </div>
-                  <h2>
-                    Всё начинается
-                    <br />с малого.
-                  </h2>
-                  <p className="muted">
-                    Не нужен идеальный план.
-                    <br />
-                    Достаточно первого квеста.
-                  </p>
-                  <div className="today-progress">
-                    <span>Квесты в демо</span>
-                    <strong>
-                      {completed}
-                      <span> / {quests.length}</span>
-                    </strong>
-                    <progress
-                      value={completed}
-                      max={quests.length || 1}
-                      aria-label="Выполненные демоквесты"
-                    />
-                  </div>
-                  <div className="mini-quests">
-                    {quests
-                      .filter((q) => !q.done)
-                      .slice(0, 3)
-                      .map((q, index) => (
-                        <button key={q.id} onClick={() => navigate("quests")}>
-                          <span className="mini-number">0{index + 1}</span>
-                          <span>{q.title}</span>
-                          <ChevronRight size={15} />
-                        </button>
-                      ))}
-                    {quests.every((q) => q.done) && (
-                      <p className="muted">
-                        Все демоквесты завершены. Можно добавить новый.
-                      </p>
-                    )}
-                  </div>
-                  <button
-                    className="button secondary full-width"
-                    onClick={() => navigate("quests")}
-                  >
-                    Открыть квесты
-                    <ArrowRight size={16} />
-                  </button>
-                  <div className="planner-teaser">
-                    <span className="feature-icon">
-                      <FlaskConical size={21} />
-                    </span>
-                    <div>
-                      <strong>Знакомься, Архитектор</strong>
-                      <p>Будущий помощник для твоих больших целей.</p>
-                    </div>
-                    <button
-                      className="icon-button"
-                      aria-label="Открыть Архитектора"
-                      onClick={() => navigate("architect")}
-                    >
-                      <ArrowUpRight size={18} />
-                    </button>
-                  </div>
-                </aside>
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="page-heading compact">
-                <div>
-                  <span className="eyebrow">
-                    ТВОЙ МИР / {title.toUpperCase()}
-                  </span>
-                  <h1>
-                    {page === "quests"
-                      ? "Реальные дела. Видимый прогресс."
-                      : page === "campaigns"
-                        ? "У каждой цели есть начало."
-                        : page === "architect"
-                          ? "Большая цель — понятный маршрут."
-                          : page === "build"
-                            ? "Место для будущих достижений."
-                            : "Каждый шаг имеет значение."}
-                  </h1>
-                </div>
-                <a className="text-button" href="#city">
-                  <Map size={16} />
-                  Вернуться в город
-                </a>
-              </div>
-              {page === "quests" && (
-                <Quests
-                  quests={quests}
-                  campaigns={campaigns}
-                  onChange={setQuests}
-                />
-              )}
-              {page === "campaigns" && (
-                <Campaigns
-                  campaigns={campaigns}
-                  quests={quests}
-                  onNew={() => setCampaignOpen(true)}
-                  onQuests={() => navigate("quests")}
-                />
-              )}
-              {page === "architect" && (
-                <section className="feature-panel">
-                  <div className="feature-illustration">
-                    <BuildingArt kind="lab" />
-                    <span className="pill">ЛАБОРАТОРИЯ</span>
-                  </div>
-                  <div>
-                    <span className="eyebrow">
-                      ОДИН ПОМОЩНИК. ТВОИ РЕШЕНИЯ.
-                    </span>
-                    <h2>Архитектор</h2>
-                    <p className="feature-lead">
-                      Поможет превратить большую цель в несколько посильных
-                      шагов.
-                    </p>
-                    <div className="availability">
-                      <Info size={19} />
-                      <div>
-                        <strong>AI ещё не подключён</strong>
-                        <p>
-                          В этом прототипе можно создать кампанию вручную. В
-                          будущем каждый AI-план будет ждать твоей проверки.
-                        </p>
-                      </div>
-                    </div>
-                    <ol className="simple-steps">
-                      <li>Расскажи о цели и свободном времени</li>
-                      <li>Проверь и измени предложенные шаги</li>
-                      <li>Подтверди план — только тогда появятся квесты</li>
-                    </ol>
-                    <div className="feature-actions">
-                      <button
-                        className="button primary"
-                        onClick={() => setCampaignOpen(true)}
-                      >
-                        Создать кампанию вручную
-                        <ArrowRight size={16} />
-                      </button>
-                      <button className="button secondary" disabled>
-                        Предложить AI-план
-                      </button>
-                    </div>
-                  </div>
-                </section>
-              )}
-              {page === "build" && (
-                <section className="feature-panel">
-                  <div className="feature-illustration plot-art">
-                    <Hammer size={64} strokeWidth={1} />
-                    <span className="pill">СВОБОДНЫЙ УЧАСТОК</span>
-                  </div>
-                  <div>
-                    <span className="eyebrow">РАЗВИТИЕ ГОРОДА</span>
-                    <h2>Место для нового</h2>
-                    <p className="feature-lead">
-                      Твои реальные достижения однажды изменят этот квартал.
-                    </p>
-                    <div className="build-options">
-                      <article>
-                        <span className="feature-icon">
-                          <Sprout size={24} />
-                        </span>
-                        <div>
-                          <h3>Городской сад</h3>
-                          <p>Небольшая зелёная награда за первые шаги.</p>
-                        </div>
-                        <strong>
-                          <Coins size={15} />
-                          60
-                        </strong>
-                      </article>
-                      <article>
-                        <span className="feature-icon">
-                          <Hammer size={24} />
-                        </span>
-                        <div>
-                          <h3>Мастерская</h3>
-                          <p>Новое здание для твоего растущего города.</p>
-                        </div>
-                        <strong>
-                          <Coins size={15} />
-                          100
-                        </strong>
-                      </article>
-                    </div>
-                    <p className="form-note">
-                      В демо показан баланс 40 монет. Для сада нужно ещё 20.
-                      Строительство станет доступно после подключения сохранения
-                      прогресса.
-                    </p>
-                    <button className="button primary" disabled>
-                      Строительство ещё недоступно
-                    </button>
-                  </div>
-                </section>
-              )}
-              {page === "progress" && (
-                <section className="content-panel">
-                  <span className="eyebrow">РАТУША</span>
-                  <h2>Твой прогресс</h2>
-                  <p className="muted">
-                    Здесь видны только изменения текущего демосеанса.
-                  </p>
-                  <div className="stats-grid">
-                    <article>
-                      <CheckCheck />
-                      <strong>{completed}</strong>
-                      <span>Демоквестов завершено</span>
-                    </article>
-                    <article>
-                      <BookOpen />
-                      <strong>{campaigns.length}</strong>
-                      <span>Кампаний в демо</span>
-                    </article>
-                    <article>
-                      <Landmark />
-                      <strong>4</strong>
-                      <span>Базовых здания</span>
-                    </article>
-                  </div>
-                  <div className="availability">
-                    <Leaf size={23} />
-                    <div>
-                      <strong>Продолжай в своём темпе</strong>
-                      <p>
-                        XP и монеты в прототипе не начисляются. История
-                        достижений появится вместе с сохранением прогресса.
-                      </p>
-                    </div>
-                  </div>
+          {!state ? (
+            <section
+              className="content-panel connection-state"
+              aria-live="polite"
+            >
+              <h1>
+                {game.loading
+                  ? "Открываем твой город…"
+                  : "Не удалось открыть город"}
+              </h1>
+              <p className="muted">
+                {game.error ||
+                  "Подключаем гостевой сеанс и загружаем сохранённый прогресс."}
+              </p>
+              {!game.loading && (
+                <div className="feature-actions">
                   <button
                     className="button primary"
-                    onClick={() => navigate("quests")}
+                    onClick={() => void game.refresh()}
                   >
-                    К следующему квесту
-                    <ArrowRight size={16} />
+                    Попробовать снова
                   </button>
-                </section>
+                  <button
+                    className="button secondary"
+                    onClick={() => setPreview(true)}
+                  >
+                    Открыть макет без сохранения
+                  </button>
+                </div>
+              )}
+            </section>
+          ) : (
+            <>
+              {game.error && (
+                <div className="form-error" role="alert">
+                  {game.error}
+                  <button
+                    className="button secondary"
+                    disabled={game.loading || game.busy}
+                    onClick={() => void game.refresh()}
+                  >
+                    Обновить данные
+                  </button>
+                </div>
+              )}
+              {page === "city" ? (
+                <Home
+                  state={state}
+                  preview={preview}
+                  onNavigate={navigate}
+                  onCampaign={() => setCampaignOpen(true)}
+                />
+              ) : (
+                <>
+                  <div className="page-heading compact">
+                    <div>
+                      <span className="eyebrow">
+                        ТВОЙ МИР / {titles[page].toUpperCase()}
+                      </span>
+                      <h1>{headings[page]}</h1>
+                    </div>
+                    <a className="text-button" href="#city">
+                      <Map size={16} />
+                      Вернуться в город
+                    </a>
+                  </div>
+                  {page === "quests" && (
+                    <Quests
+                      quests={state.quests}
+                      campaigns={state.campaigns}
+                      preview={preview}
+                      busy={game.busy}
+                      onSave={game.saveQuest}
+                      onComplete={game.completeQuest}
+                    />
+                  )}
+                  {page === "campaigns" && (
+                    <Campaigns
+                      campaigns={state.campaigns}
+                      quests={state.quests}
+                      preview={preview}
+                      onNew={() => setCampaignOpen(true)}
+                      onQuests={() => navigate("quests")}
+                    />
+                  )}
+                  {page === "architect" && (
+                    <Architect
+                      preview={preview}
+                      available={state.ai_available}
+                      onManual={() => setCampaignOpen(true)}
+                      onAccept={async (id, draft) => {
+                        await game.mutate(() => gameApi.acceptPlan(id, draft));
+                        navigate("campaigns");
+                      }}
+                    />
+                  )}
+                  {page === "build" && (
+                    <BuildPanel
+                      state={state}
+                      preview={preview}
+                      busy={game.busy}
+                      onBuild={game.build}
+                      onCity={() => navigate("city")}
+                    />
+                  )}
+                  {page === "progress" && (
+                    <section className="content-panel">
+                      <span className="eyebrow">РАТУША</span>
+                      <h2>Твой прогресс</h2>
+                      <p className="muted">
+                        {preview
+                          ? "Изменения текущего демосеанса."
+                          : "Достижения, сохранённые в твоём гостевом городе."}
+                      </p>
+                      <div className="stats-grid">
+                        <article>
+                          <CheckCheck />
+                          <strong>{completed}</strong>
+                          <span>Квестов завершено</span>
+                        </article>
+                        <article>
+                          <BookOpen />
+                          <strong>{state.campaigns.length}</strong>
+                          <span>Кампаний</span>
+                        </article>
+                        <article>
+                          <Landmark />
+                          <strong>{4 + state.buildings.length}</strong>
+                          <span>Зданий и объектов</span>
+                        </article>
+                      </div>
+                      <div className="availability">
+                        <Leaf size={23} />
+                        <div>
+                          <strong>Продолжай в своём темпе</strong>
+                          <p>
+                            {preview
+                              ? "XP и монеты в макете не начисляются."
+                              : `Уровень ${state.wallet.level} · ${state.wallet.total_xp} XP. За паузы нет штрафов.`}
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        className="button primary"
+                        onClick={() => navigate("quests")}
+                      >
+                        К следующему квесту
+                        <ArrowRight size={16} />
+                      </button>
+                    </section>
+                  )}
+                </>
               )}
             </>
           )}
           <footer className="page-footer">
             <span>
-              <Layers3 size={13} /> Твои усилия обретают форму.
+              <Layers3 size={13} />
+              Твои усилия обретают форму.
             </span>
             <span>Город растёт вместе с тобой</span>
           </footer>
@@ -461,9 +284,10 @@ export default function App() {
       </div>
       {campaignOpen && (
         <CampaignForm
+          preview={preview}
           onClose={() => setCampaignOpen(false)}
-          onSave={(campaign) => {
-            setCampaigns((items) => [...items, campaign]);
+          onSave={async (campaign) => {
+            await game.saveCampaign(campaign);
             setCampaignOpen(false);
             navigate("campaigns");
           }}

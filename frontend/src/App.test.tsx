@@ -6,18 +6,27 @@ import App from "./App";
 describe("M1 visual demo", () => {
   it("moves keyboard focus to the review step and preserves inputs when returning", async () => {
     const user = userEvent.setup();
-    render(<App />);
+    render(<App mode="preview" />);
     await user.click(screen.getByRole("button", { name: "Новая кампания" }));
-    await user.type(screen.getByLabelText("Название кампании"), "Проверить фокус");
-    await user.click(screen.getByRole("button", { name: "Проверить кампанию" }));
-    expect(screen.getByRole("heading", { name: "Проверь свою цель" })).toHaveFocus();
+    await user.type(
+      screen.getByLabelText("Название кампании"),
+      "Проверить фокус",
+    );
+    await user.click(
+      screen.getByRole("button", { name: "Проверить кампанию" }),
+    );
+    expect(
+      screen.getByRole("heading", { name: "Проверь свою цель" }),
+    ).toHaveFocus();
     await user.click(screen.getByRole("button", { name: "Изменить" }));
-    expect(screen.getByLabelText("Название кампании")).toHaveValue("Проверить фокус");
+    expect(screen.getByLabelText("Название кампании")).toHaveValue(
+      "Проверить фокус",
+    );
     expect(screen.getByLabelText("Название кампании")).toHaveFocus();
   });
   it("opens the correct destinations from all four buildings and the plot", async () => {
     const user = userEvent.setup();
-    render(<App />);
+    render(<App mode="preview" />);
     expect(
       screen.getByText(/изменения исчезнут после перезагрузки/i),
     ).toBeVisible();
@@ -45,7 +54,7 @@ describe("M1 visual demo", () => {
 
   it("rejects whitespace and saves a campaign only after explicit review", async () => {
     const user = userEvent.setup();
-    render(<App />);
+    render(<App mode="preview" />);
     await user.click(screen.getByRole("button", { name: "Новая кампания" }));
     const dialog = screen.getByRole("dialog");
     await user.type(within(dialog).getByLabelText("Название кампании"), "   ");
@@ -75,7 +84,7 @@ describe("M1 visual demo", () => {
 
   it("cancels a reviewed campaign without adding it and returns keyboard focus", async () => {
     const user = userEvent.setup();
-    render(<App />);
+    render(<App mode="preview" />);
     const trigger = screen.getByRole("button", { name: "Новая кампания" });
     await user.click(trigger);
     await user.type(
@@ -92,7 +101,7 @@ describe("M1 visual demo", () => {
 
   it("creates, edits and completes a demo quest without changing the wallet", async () => {
     const user = userEvent.setup();
-    render(<App />);
+    render(<App mode="preview" />);
     await user.click(screen.getByRole("link", { name: "Квесты" }));
     await user.click(
       await screen.findByRole("button", { name: "Новый квест" }),
@@ -134,7 +143,7 @@ describe("M1 visual demo", () => {
 
   it("shows an actionable empty quest state and never implies AI is running", async () => {
     const user = userEvent.setup();
-    render(<App />);
+    render(<App mode="preview" />);
     await user.click(screen.getByRole("link", { name: "Квесты" }));
     await user.click(await screen.findByRole("button", { name: "Готово" }));
     expect(screen.getByText("Пока нет завершённых квестов")).toBeVisible();

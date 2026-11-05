@@ -20,15 +20,22 @@ import {
 export function Quests({
   quests,
   campaigns,
-  onChange,
+  onSave,
+  onComplete,
+  busy = false,
+  preview = true,
 }: {
   quests: Quest[];
   campaigns: Campaign[];
-  onChange: (quests: Quest[]) => void;
+  onSave: (quest: Quest, isNew: boolean) => Promise<void>;
+  onComplete: (id: string) => Promise<void>;
+  busy?: boolean;
+  preview?: boolean;
 }) {
   const [filter, setFilter] = useState<"open" | "done" | "all">("open");
   const [editing, setEditing] = useState<Quest | "new" | null>(null);
   const [notice, setNotice] = useState("");
+  const [error, setError] = useState("");
   const shown = quests.filter(
     (q) => filter === "all" || q.done === (filter === "done"),
   );
@@ -71,8 +78,9 @@ export function Quests({
         </span>
       </div>
       <p className="form-note">
-        Демоквесты · завершение меняет только карточку. Награды пока не
-        начисляются.
+        {preview
+          ? "Демоквесты · завершение меняет только карточку. Награды пока не начисляются."
+          : "Отмечай сделанное в реальности. Награду за каждый квест сервер начислит один раз."}
       </p>
       <div className="quest-list">
         {shown.map((quest) => (
@@ -83,14 +91,24 @@ export function Quests({
             <button
               className="quest-check"
               aria-label={`${quest.done ? "Завершено" : "Завершить"}: ${quest.title}`}
-              disabled={quest.done}
-              onClick={() => {
-                onChange(
-                  quests.map((q) =>
-                    q.id === quest.id ? { ...q, done: true } : q,
-                  ),
-                );
-                setNotice("Квест отмечен в демо. XP и монеты не начислены.");
+              disabled={quest.done || busy}
+              onClick={async () => {
+                setError("");
+                setNotice("");
+                try {
+                  await onComplete(quest.id);
+                  setNotice(
+                    preview
+                      ? "Квест отмечен в демо. XP и монеты не начислены."
+                      : "Квест завершён. Награда подтверждена сервером.",
+                  );
+                } catch (cause) {
+                  setError(
+                    cause instanceof Error
+                      ? cause.message
+                      : "Не удалось завершить квест.",
+                  );
+                }
               }}
             >
               {quest.done && <Check size={17} />}
@@ -103,7 +121,12 @@ export function Quests({
                 <span> · {difficultyLabels[quest.difficulty]}</span>
               </p>
             </div>
-            <div className="quest-reward" aria-label="Пример будущей награды">
+            <div
+              className="quest-reward"
+              aria-label={
+                preview ? "Пример будущей награды" : "Награда за выполнение"
+              }
+            >
               <span>
                 <Sparkles size={13} />
                 {rewardPreview[quest.difficulty].xp} XP
@@ -147,6 +170,11 @@ export function Quests({
           </button>
         </div>
       )}
+      {error && (
+        <p className="form-error" role="alert">
+          {error}
+        </p>
+      )}
       <p className="inline-status" role="status">
         {notice}
       </p>
@@ -155,15 +183,16 @@ export function Quests({
           quest={editing === "new" ? undefined : editing}
           campaigns={campaigns}
           onClose={() => setEditing(null)}
-          onSave={(quest) => {
-            onChange(
-              editing === "new"
-                ? [...quests, quest]
-                : quests.map((q) => (q.id === quest.id ? quest : q)),
-            );
+          preview={preview}
+          onSave={async (quest) => {
+            await onSave(quest, editing === "new");
             setEditing(null);
             setFilter("open");
-            setNotice("Изменения сохранены только в этом демо.");
+            setNotice(
+              preview
+                ? "Изменения сохранены только в этом демо."
+                : "Квест сохранён.",
+            );
           }}
         />
       )}
@@ -172,6 +201,7 @@ export function Quests({
 }
 
 function QuestForm({
+  preview,
   quest,
   campaigns,
   onSave,
@@ -179,7 +209,8 @@ function QuestForm({
 }: {
   quest?: Quest;
   campaigns: Campaign[];
-  onSave: (quest: Quest) => void;
+  onSave: (quest: Quest) => Promise<void>;
+  preview: boolean;
   onClose: () => void;
 }) {
   const [title, setTitle] = useState(quest?.title || "");
@@ -188,22 +219,38 @@ function QuestForm({
   );
   const [campaignId, setCampaignId] = useState(quest?.campaignId || "");
   const [error, setError] = useState("");
-  function submit(event: FormEvent) {
+  const [saving, setSaving] = useState(false);
+  async function submit(event: FormEvent) {
     event.preventDefault();
     if (title.trim().length < 3) {
       setError("Введи название от 3 до 140 символов.");
       return;
     }
-    onSave({
-      id: quest?.id || crypto.randomUUID(),
-      title: title.trim(),
-      difficulty,
-      done: false,
-      campaignId,
-    });
+    setSaving(true);
+    setError("");
+    try {
+      await onSave({
+        id: quest?.id || crypto.randomUUID(),
+        title: title.trim(),
+        difficulty,
+        done: false,
+        campaignId,
+      });
+    } catch (cause) {
+      setError(
+        cause instanceof Error ? cause.message : "Не удалось сохранить квест.",
+      );
+    } finally {
+      setSaving(false);
+    }
   }
   return (
-    <Dialog title={quest ? "Изменить квест" : "Новый квест"} onClose={onClose}>
+    <Dialog
+      title={quest ? "Изменить квест" : "Новый квест"}
+      onClose={() => {
+        if (!saving) onClose();
+      }}
+    >
       <span className="feature-icon large">
         <ClipboardList size={27} />
       </span>
@@ -249,7 +296,9 @@ function QuestForm({
           ))}
         </select>
         <div className="reward-example">
-          <span>Пример будущей награды</span>
+          <span>
+            {preview ? "Пример будущей награды" : "Награда за выполнение"}
+          </span>
           <strong>
             {rewardPreview[difficulty].xp} XP ·{" "}
             {rewardPreview[difficulty].coins} монет
@@ -261,14 +310,25 @@ function QuestForm({
           </p>
         )}
         <p className="form-note">
-          Деморежим: без сохранения на сервере и начисления наград.
+          {preview
+            ? "Деморежим: без сохранения на сервере и начисления наград."
+            : "Квест сохранится в твоём гостевом сеансе."}
         </p>
         <div className="form-actions">
-          <button type="button" className="button secondary" onClick={onClose}>
+          <button
+            type="button"
+            className="button secondary"
+            onClick={onClose}
+            disabled={saving}
+          >
             Отмена
           </button>
-          <button className="button primary" type="submit">
-            {quest ? "Сохранить изменения" : "Добавить квест"}
+          <button className="button primary" type="submit" disabled={saving}>
+            {saving
+              ? "Сохраняем…"
+              : quest
+                ? "Сохранить изменения"
+                : "Добавить квест"}
           </button>
         </div>
       </form>

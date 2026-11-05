@@ -1,0 +1,138 @@
+.connection-state {
+  margin: 32px 0;
+  min-height: 240px;
+}
+.form-error > .button {
+  display: flex;
+  margin-top: 12px;
+}
+.build-copy {
+  flex: 1;
+}
+.build-copy > strong {
+  margin: 12px 0;
+}
+.build-options article > .button {
+  flex-shrink: 0;
+}
+.planner-form {
+  max-width: 680px;
+  margin-top: 24px;
+}
+.consent-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.consent-label input {
+  width: 18px;
+  height: 18px;
+  min-height: 0;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.job-history {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 32px;
+}
+.job-history h3 {
+  width: 100%;
+  margin: 0;
+}
+.job-history button {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.plan-review {
+  margin-top: 30px;
+  border-top: 1px solid var(--border);
+  padding-top: 24px;
+}
+.milestone {
+  border: 1px solid #b497e836;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 24px 0;
+}
+.milestone legend {
+  padding: 0 8px;
+  color: var(--accent-soft);
+  font-size: 13px;
+}
+.plan-quest {
+  padding: 16px;
+  margin-top: 20px;
+  background: #1c1b2e66;
+  border-radius: 10px;
+}
+.plan-review ul {
+  padding-left: 18px;
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+.constructed-hotspot {
+  position: absolute;
+  left: 77%;
+  top: 67%;
+  transform: translate(-50%, -80%);
+  width: 22%;
+  background: none;
+  padding: 0;
+  z-index: 4;
+}
+.constructed-hotspot > svg {
+  width: 100%;
+  display: block;
+  animation: building-reveal 0.7s ease-out;
+}
+.constructed-hotspot > span {
+  display: block;
+  border-radius: 8px;
+  background: #282539ed;
+  border: 1px solid #bea1dd55;
+  font-size: 10px;
+  padding: 8px;
+  white-space: nowrap;
+}
+.constructed-hotspot:hover {
+  filter: brightness(1.12);
+}
+@keyframes building-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (max-width: 700px) {
+  .build-options article {
+    flex-wrap: wrap;
+  }
+  .build-options article > .button {
+    width: 100%;
+  }
+  .milestone {
+    padding: 14px;
+  }
+  .plan-quest {
+    padding: 12px;
+  }
+  .constructed-hotspot {
+    left: 81%;
+    top: 78%;
+    width: 25%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .constructed-hotspot > svg {
+    animation: none;
+  }
+}

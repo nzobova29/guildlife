@@ -1,5 +1,7 @@
 import { ArrowUpRight, Compass, Plus, Moon } from "lucide-react";
 import { buildings, type Page } from "../data/demo";
+import { ConstructedArt } from "./ConstructedArt";
+import type { CityBuilding } from "../api/game";
 import { BuildingArt } from "./BuildingArt";
 
 function Tree({
@@ -21,7 +23,13 @@ function Tree({
   );
 }
 
-export function CityMap({ onNavigate }: { onNavigate: (page: Page) => void }) {
+export function CityMap({
+  onNavigate,
+  constructed = [],
+}: {
+  onNavigate: (page: Page) => void;
+  constructed?: CityBuilding[];
+}) {
   return (
     <section className="city-map" aria-label="Интерактивная карта города">
       <div className="map-caption">
@@ -35,7 +43,12 @@ export function CityMap({ onNavigate }: { onNavigate: (page: Page) => void }) {
         <Moon size={15} /> Тихий вечер
       </span>
       <div className="map-stage">
-        <svg className="ground" viewBox="0 0 960 700" fill="none" aria-hidden="true">
+        <svg
+          className="ground"
+          viewBox="0 0 960 700"
+          fill="none"
+          aria-hidden="true"
+        >
           <defs>
             <radialGradient id="city-halo">
               <stop stopColor="#5f527e" stopOpacity=".4" />
@@ -154,20 +167,37 @@ export function CityMap({ onNavigate }: { onNavigate: (page: Page) => void }) {
             </span>
           </button>
         ))}
-        <button
-          className="plot-hotspot"
-          aria-label="Открыть: Свободный участок"
-          onClick={() => onNavigate("build")}
-        >
-          <Plus size={21} />
-          <span>Свободный участок</span>
-        </button>
+        {constructed.length ? (
+          <button
+            className="constructed-hotspot"
+            aria-label={`Открыть: ${constructed[0].building_type === "garden" ? "Городской сад" : "Мастерская"}`}
+            onClick={() => onNavigate("build")}
+          >
+            <ConstructedArt type={constructed[0].building_type} />
+            <span>
+              {constructed[0].building_type === "garden"
+                ? "Городской сад"
+                : "Мастерская"}
+            </span>
+          </button>
+        ) : (
+          <button
+            className="plot-hotspot"
+            aria-label="Открыть: Свободный участок"
+            onClick={() => onNavigate("build")}
+          >
+            <Plus size={21} />
+            <span>Свободный участок</span>
+          </button>
+        )}
       </div>
       <div className="map-bottom">
         <span>
           <Compass size={16} /> Выбери здание и сделай первый шаг
         </span>
-        <span className="map-scale">4 здания · 1 участок</span>
+        <span className="map-scale">
+          {constructed.length ? "Город стал больше" : "4 здания · 1 участок"}
+        </span>
       </div>
     </section>
   );

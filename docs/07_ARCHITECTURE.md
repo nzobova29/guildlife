@@ -14,7 +14,7 @@ flowchart LR
     GH -.unit/integration.-> API
 ```
 
-## Repository layout (frontend implemented; backend/Compose planned)
+## Repository layout (frontend, backend and Compose implemented locally)
 
 ```text
 GuildLife/
@@ -24,12 +24,12 @@ GuildLife/
 ├── assets/concepts/            # design mockups, NOT implemented UI
 ├── frontend/                   # [IMPLEMENTED M1] Vite + React + TS
 │   └── src/{components,features,data,styles,test}/
-├── backend/                    # [TO BE CREATED] FastAPI
+├── backend/                    # [IMPLEMENTED M2] FastAPI
 │   ├── app/{api,domain,models,schemas,services,db}/
 │   ├── alembic/
 │   └── tests/
 ├── .github/
-└── compose.yaml               # [TO BE CREATED]
+└── compose.yaml               # [IMPLEMENTED] local container demo
 ```
 
 ## Responsibilities
@@ -89,7 +89,7 @@ erDiagram
 | `POST` | `/api/v1/ai/jobs/{job_id}/accept` | validate and save confirmed plan |
 | `GET` | `/api/v1/reports/weekly` | aggregate actual progress |
 
-**Important:** the endpoints are design contracts; not yet implemented. Define OpenAPI/Pydantic schemas and align the frontend after the first implementation task.
+**Current status:** guest session, game-state, campaign/quest CRUD, completion, building and AI job endpoints are implemented locally. `/reports/weekly` remains planned. Interactive API schema is available at backend `/docs`; exact schemas live in `backend/app/schemas.py` and `backend/app/ai.py`.
 
 ## Money / XP transactional integrity
 
@@ -120,3 +120,7 @@ Dev: Docker Compose for PostgreSQL/backend/frontend; frontend Vite proxy to back
 - Official React + Vite/TypeScript: https://react.dev/learn/build-a-react-app-from-scratch
 - Vite setup: https://vite.dev/guide/
 - OWASP LLM: https://owasp.org/www-project-top-10-for-large-language-model-applications/
+
+## Текущее уточнение — 05.11.2026
+
+Внутренний AI-провайдер — GigaChat. Планирование синхронное с сохранённым AiJob и реальными статусами; провайдер вызывается только при настроенных ключах/модели/лимите. Профиль (имя/фото) локален и не является аккаунтом. Внешние агенты пользователя пока описаны как отдельный канал входящих событий, см. [20](20_EXTERNAL_AGENTS.md). Compose использует nginx same-origin `/api` и PostgreSQL named volume.

@@ -72,3 +72,21 @@ Before implementation, add concrete results of tech spikes and update proposal s
 ## M1 implementation evidence — 05.11.2026
 
 ADR-001 проверен локальным React/Vite build: SVG-здания и HTML-hotspots, формы, адаптивная навигация, browser screenshots. [Evidence](19_M1_EVIDENCE.md). SVG-геометрия выбрана как обратимое решение для первого спринта; исходные PNG-концепты не включены в приложение. ADR-002–006 остаются Proposed до backend-этапа.
+
+## ADR-008: GigaChat для внутреннего планировщика
+
+- **Status:** Accepted as provider choice by user,05.11.2026; live integration verification pending credentials.
+- **Decision:** GigaChat через серверный OAuth/access token и JSON schema; без внешних tools. TLS всегда проверяется, дополнительный CA задаётся явно.
+- **Evidence:** PostgreSQL+MockTransport tests, real approval UI. Ключей и живых вызовов в сессии не было.
+- **Limits:** Дневной бюджет ограничивает число вызовов, а не рубли; денежный лимит уточняется по модели/тарифу перед публикацией.
+
+## ADR-009: Наблюдение за внешними агентами через события
+
+- **Status:** Proposed; implementation deferred.
+- **Decision:** Пользовательский агент работает вне GuildLife, присылает аутентифицированные события; UI показывает источник, состояние и время последнего сообщения.
+- **Consequence:** Команды запуска/остановки и реальные проценты не изображаются без отдельного контракта. Завершение агента не выдаёт награды.
+- **Open:** Первый поддерживаемый источник и долговечное владение подключением после гостевого TTL; [details](20_EXTERNAL_AGENTS.md).
+
+## M2 validation
+
+ADR-002/003/005/006 проверены локально: PostgreSQL, миграции, гостевая изоляция, конкурентное завершение/строительство и reload. Это не production audit или окончательная приёмка автором. [Evidence](22_M2_EVIDENCE.md).

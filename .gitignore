@@ -15,3 +15,7 @@ coverage/
 .DS_Store
 .playwright-cli/
 .superpowers/
+
+# Local deployment overrides and certificates
+compose.override.yaml
+local-certificates/

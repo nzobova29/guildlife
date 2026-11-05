@@ -4,6 +4,17 @@ All notable implemented changes will be documented here. Do not confuse design d
 
 ## [Unreleased] — 2026-11-05
 
+### Persistent local app / sidebar repair
+- Fixed independent sidebar scrolling at short heights and restored a visible mobile profile.
+- Added local display name and optional PNG/JPEG/WebP avatar upload with validation.
+- Added FastAPI, PostgreSQL/Alembic, isolated guest sessions, persisted campaign/quest APIs, transactional rewards, append-only ledger and atomic building purchases.
+- Connected React to the API, added server loading/error/retry, persistent city objects and manual fallback.
+- Added GigaChat adapter, validated draft editor, explicit acceptance, per-guest/global call limits and provider-error tests. Live model calls remain unconfigured.
+- Added and locally verified Docker Compose builds; external-agent event contract documented as proposed.
+- No public deployment, remote CI result, external-agent integration or live-model quality results yet.
+
+## M1 baseline — 2026-11-05
+
 ### Product / documentation
 - Defined GuildLife working concept, MVP scope, core game loop and initial visual design.
 - Drafted PRD, user journeys, GDD, AI design, architecture, ADRs, roadmap, backlog, test strategy, risk register and portfolio plan.

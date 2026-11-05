@@ -15,11 +15,13 @@ export function Campaigns({
   quests,
   onNew,
   onQuests,
+  preview = true,
 }: {
   campaigns: Campaign[];
   quests: Quest[];
   onNew: () => void;
   onQuests: () => void;
+  preview?: boolean;
 }) {
   return (
     <section className="content-panel">
@@ -46,7 +48,9 @@ export function Campaigns({
                 <span className="feature-icon">
                   <BookOpen size={23} />
                 </span>
-                <span className="pill">Демокампания</span>
+                <span className="pill">
+                  {preview ? "Демокампания" : "Кампания"}
+                </span>
               </div>
               <h3>{campaign.title}</h3>
               <p>{campaign.description || "Начни с одного небольшого дела."}</p>
@@ -85,9 +89,11 @@ export function Campaigns({
 export function CampaignForm({
   onClose,
   onSave,
+  preview = true,
 }: {
   onClose: () => void;
-  onSave: (campaign: Campaign) => void;
+  onSave: (campaign: Campaign) => Promise<void> | void;
+  preview?: boolean;
 }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -95,6 +101,7 @@ export function CampaignForm({
   const [hours, setHours] = useState("4");
   const [review, setReview] = useState(false);
   const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
   const headingRef = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
     if (review) headingRef.current?.focus();
@@ -117,11 +124,18 @@ export function CampaignForm({
     setReview(true);
   }
   return (
-    <Dialog title="Новая кампания" onClose={onClose}>
+    <Dialog
+      title="Новая кампания"
+      onClose={() => {
+        if (!saving) onClose();
+      }}
+    >
       <span className="feature-icon large">
         <Flag size={28} />
       </span>
-      <h2 ref={headingRef} tabIndex={-1}>{review ? "Проверь свою цель" : "С чего начнётся твоя история?"}</h2>
+      <h2 ref={headingRef} tabIndex={-1}>
+        {review ? "Проверь свою цель" : "С чего начнётся твоя история?"}
+      </h2>
       <p className="muted">
         {review
           ? "Кампания появится только после твоего подтверждения."
@@ -145,29 +159,53 @@ export function CampaignForm({
             </dl>
           </div>
           <p className="form-note">
-            Это локальный пример. AI не используется, данные не отправляются на
-            сервер.
+            {preview
+              ? "Это локальный пример. AI не используется, данные не отправляются на сервер."
+              : "Ручная кампания будет сохранена в твоём гостевом сеансе. AI не используется."}
           </p>
+          {error && (
+            <p className="form-error" role="alert">
+              {error}
+            </p>
+          )}
           <div className="form-actions">
             <button
               className="button secondary"
+              disabled={saving}
               onClick={() => setReview(false)}
             >
               Изменить
             </button>
             <button
               className="button primary"
-              onClick={() =>
-                onSave({
-                  id: crypto.randomUUID(),
-                  title: title.trim(),
-                  description: description.trim(),
-                  deadline,
-                  hours: Number(hours),
-                })
-              }
+              disabled={saving}
+              onClick={async () => {
+                setSaving(true);
+                setError("");
+                try {
+                  await onSave({
+                    id: crypto.randomUUID(),
+                    title: title.trim(),
+                    description: description.trim(),
+                    deadline,
+                    hours: Number(hours),
+                  });
+                } catch (cause) {
+                  setError(
+                    cause instanceof Error
+                      ? cause.message
+                      : "Не удалось сохранить кампанию.",
+                  );
+                } finally {
+                  setSaving(false);
+                }
+              }}
             >
-              Добавить в демо
+              {saving
+                ? "Сохраняем…"
+                : preview
+                  ? "Добавить в демо"
+                  : "Сохранить кампанию"}
               <ArrowRight size={16} />
             </button>
           </div>
@@ -223,7 +261,9 @@ export function CampaignForm({
             </p>
           )}
           <p className="form-note">
-            Ручное планирование · изменения исчезнут после перезагрузки.
+            {preview
+              ? "Ручное планирование · изменения исчезнут после перезагрузки."
+              : "Ручное планирование · сохранение в твоём гостевом сеансе."}
           </p>
           <div className="form-actions">
             <button

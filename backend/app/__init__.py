@@ -1,0 +1,1 @@
+"""GuildLife server."""

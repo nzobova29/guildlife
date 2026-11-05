@@ -2,12 +2,12 @@
 
 **Turn real-life goals into quests. Build your city. Work alongside an AI planning companion.**
 
-> **Project status: M1 local visual prototype — ready for review, not a released MVP.**
-> React UI is implemented: an interactive SVG city, campaign review form and local quest editing. Data resets on reload; backend, rewards, construction and AI are not connected. No public deployment yet.
+> **Project status: persistent local vertical slice (M2), with a GigaChat adapter ready for configuration.**
+> Campaigns, quests, rewards and construction use FastAPI + PostgreSQL. A visible local profile supports your own name/photo. Live GigaChat calls and public hosting are not configured yet.
 
-![GuildLife running local prototype](output/playwright/m1-city-desktop.png)
+![GuildLife running with server-side progress](output/playwright/m2-city.png)
 
-Actual running UI. [Full page](output/playwright/m1-city-desktop-full.png) · [Mobile](output/playwright/m1-city-mobile.png) · [Verification record](docs/19_M1_EVIDENCE.md). Original concepts remain in `assets/concepts/`.
+Actual local UI. [Mobile](output/playwright/m2-mobile.png) · [Current evidence](docs/22_M2_EVIDENCE.md) · [Run/deploy guide](docs/21_RUN_AND_DEPLOY.md). Original concepts remain in `assets/concepts/`.
 
 ## Why GuildLife?
 
@@ -15,10 +15,10 @@ Typical task managers show a list of to-dos. GuildLife visualizes progress as a 
 
 **The real goal of this project:** demonstrate end-to-end product thinking, delivery management and hands-on full-stack / AI understanding — with a delightful, functional vertical slice.
 
-## Demo narrative (planned)
+## Demo narrative
 
 1. Set a real goal, deadline and weekly capacity.
-2. Ask the AI Planner for a suggested campaign and **review it before saving**.
+2. Create a campaign manually; with configured GigaChat, request a draft and **review/edit it before saving**.
 3. Complete a quest; XP and coins are awarded once by the server.
 4. Spend the reward on a building, watching the city change.
 5. Inspect campaign progress and real AI job status (weekly recap is a stretch feature).
@@ -27,11 +27,11 @@ Typical task managers show a list of to-dos. GuildLife visualizes progress as a 
 
 | Feature | MVP commitment | Implementation |
 |---|---|---|
-| Isometric city + building unlock | Yes | Four clickable SVG buildings + plot; purchases not implemented |
-| Campaigns, quests, completion, rewards | Yes | Local create/review/edit/done UI; server persistence and rewards not implemented |
-| One AI planner with user approval | Yes | Not started |
-| Persistent state in PostgreSQL | Yes | Not started |
-| Guest demo experience | Yes | Clearly labeled local fixtures; isolated server sessions not implemented |
+| Isometric city + building unlock | Yes | Four clickable SVG buildings + one plot; garden/workshop purchases persisted |
+| Campaigns, quests, completion, rewards | Yes | Persisted CRUD, server-confirmed completion, transactional rewards and ledger |
+| One AI planner with user approval | Yes | GigaChat adapter, validation, review and accept implemented; real-provider evaluation pending |
+| Persistent state in PostgreSQL | Yes | Implemented with Alembic migrations |
+| Guest demo experience | Yes | Isolated HttpOnly guest cookies, 7-day TTL; per-guest seed |
 | Focus timer / Kanban / complex NPC workflows | Stretch | Not started |
 | Multi-agent integrations, payments, PvP | No | Out of scope |
 
@@ -40,8 +40,8 @@ Typical task managers show a list of to-dos. GuildLife visualizes progress as a 
 - **Frontend:** React + TypeScript + Vite; stateful map UI, game panels, interaction.
 - **Backend:** Python + FastAPI + Pydantic; domain logic and REST endpoints.
 - **Database:** PostgreSQL + SQLAlchemy + Alembic; transactional XP/coins/buildings.
-- **AI:** One server-side LLM integration; structured output, deterministic validation, cost controls.
-- **Engineering:** Vitest + Testing Library, ESLint, TypeScript and frontend GitHub Actions configuration. Docker Compose and pytest planned with the backend. Remote CI has not run yet.
+- **AI:** Server-side GigaChat integration; structured output, validation, explicit approval, guest/global call limits. No live credentials configured.
+- **Engineering:** Docker Compose, pytest against PostgreSQL, Vitest + Testing Library, ESLint, Ruff, TypeScript and GitHub Actions configuration. Remote CI has not run yet.
 
 > No Supabase, LangGraph, 3D engine or subscriptions in MVP. Decisions are documented in [ADRs](docs/08_DECISIONS_ADR.md).
 
@@ -88,28 +88,33 @@ The [eight concept screens](assets/concepts/) are **explorations of the wider vi
 
 ## How to run?
 
-Requirements: Node.js **22.12+** (verified on 24.18) and npm. From this repository root:
+For the full app, install Docker/Compose and run from this repository root:
+
+```sh
+docker compose up --build -d
+```
+
+Open **http://localhost:8080**. The database lives in a named volume; ordinary `docker compose down` preserves it. No AI credentials are needed for manual campaigns, quests and construction. Live GigaChat is off by default.
+
+For the separate development environment (Python/PostgreSQL + Vite), GigaChat environment variables, custom CA setup and deployment prerequisites, see the [run/deploy guide](docs/21_RUN_AND_DEPLOY.md).
 
 ```sh
 cd frontend
 npm ci --ignore-scripts
-npm run dev
-```
-
-Open the local address printed by Vite (normally `http://127.0.0.1:5173`).
-
-```sh
 npm test
 npm run lint
 npm run build
-npm run preview
 ```
 
-Try each city building → create a campaign → review and explicitly add it → open Quests → create, edit and mark a quest done. The wallet stays at **40 coins / 0 XP**. Reload resets the demo. No API key, database or external service is needed.
+Backend: `cd backend` then `.venv/bin/python -m pytest -q` against a dedicated PostgreSQL database ending `_test`; full setup is in the guide. Test fixtures reset only that test database.
 
-Validation: 6 component tests; production build and lint pass; browser checks cover desktop/mobile, forms, hotspots and keyboard behavior. See [evidence and limitations](docs/19_M1_EVIDENCE.md). The GitHub Actions workflow is added but has not been run remotely.
+Try **medium quest → 20 coins / 50 XP → garden for 60 coins → reload**. The initial wallet has 40 coins. Repeated completion cannot pay twice. The local profile photo/name stays in this browser and is never sent to GigaChat.
 
-Next: **GL-010**, FastAPI + PostgreSQL + Alembic, followed by guest isolation and a server-authoritative economy. Full MVP acceptance tests are still pending.
+The explicit `?preview=1` mode retains the old UI-only mock with no persistence. The default app requires the server and shows a retry screen if unavailable.
+
+Verification: **21 frontend tests, 41 PostgreSQL backend tests**, lint/type/build checks and browser tests of the persisted flow. [Evidence and limitations](docs/22_M2_EVIDENCE.md). No public URL or remote CI result is claimed.
+
+External user agents are a future event-ingestion integration, not agents hosted or launched by GuildLife; see the [proposed contract](docs/20_EXTERNAL_AGENTS.md).
 
 ## Transparency
 
